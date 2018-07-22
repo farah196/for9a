@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">For9a</string>
+
+    <string name="title_activity_profile_info">profileInfo</string>
+    <string name="dialog_title">Attention</string>
+    <string name="todo">TODO</string>
+</resources>
