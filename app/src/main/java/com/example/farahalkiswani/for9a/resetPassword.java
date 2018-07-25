@@ -32,14 +32,7 @@ public class resetPassword extends AppCompatActivity {
         Email= findViewById( R.id.resetEmail );
 
         Ok = findViewById( R.id.reset_btn );
-        cancel= findViewById( R.id.cancelReset );
-        cancel.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent( resetPassword.this, Login.class );
-                startActivity( intent );
-            }
-        } );
+
 
         Ok.setOnClickListener( new View.OnClickListener() {
             @Override
