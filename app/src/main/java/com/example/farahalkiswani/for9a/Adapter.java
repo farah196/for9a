@@ -3,6 +3,7 @@ package com.example.farahalkiswani.for9a;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -44,6 +47,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     List<String> FullDescription;
     Context context;
 
+    private FragmentCommunication mCommunicator;
     private LayoutInflater mInflater;
 
     public Adapter(Context context, List<String> name, List<String> Desc, List<String> image, List<Integer> pinNumber, List<Integer> id, List<Integer> isPinned) {
@@ -55,6 +59,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         this.id = id;
         this.isPinned = isPinned;
         this.context = context;
+
     }
 
     public Adapter(List<String> List) {
@@ -137,11 +142,16 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     @NonNull
     @Override
+
+
     public Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_row, parent, false);
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
 
-
-        View view = mInflater.inflate(R.layout.recycle_row, parent, false);
-        return new ViewHolder(view);
+          /*  //  View view = mInflater.inflate(R.layout.recycle_row, parent, false);
+        RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view,mCommunicator);
+        return holder;*/
     }
 
     @Override
@@ -155,34 +165,36 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.imgPin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              /*  int ispin =isPinned.get(position);
-                if (ispin==0) {
-                    int pin = pinNumber.get(position);*/
                 SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
                 String authintication = prefs.getString("authclient", "");
                 Log.d("authpin", authintication);
-                userPin(authintication,id.get(position));
-                   /* pin++;
+
+                if (isPinned.get(position) == 0) {
+
+
+                    userPin(authintication,id.get(position));
+                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position)+1));
                     holder.imgPin.setImageResource(R.drawable.likepin);
                     Toast.makeText(context,"تم حفظ الفرصة",Toast.LENGTH_LONG).show();
-                    ispin=1;
+
                 }
+
+
                 else {
 
-                    int pin = pinNumber.get(position);
-                    SharedPreferences Authentication = PreferenceManager.getDefaultSharedPreferences(context);
-                    String authintication = Authentication.getString("authclient", "MNrAG2QLv41sWs2qd-spRKT594bfwROM");
-                    Log.d("authpin", authintication);
                     DeletePin(authintication, id.get(position));
-                    pin--;
-                    holder.imgPin.setImageResource(R.drawable.likepin);
-                    Toast.makeText(context,"تم حفظ الفرصة",Toast.LENGTH_LONG).show();
-                    ispin=0;
+                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position)-1));
+                    holder.imgPin.setImageResource(R.drawable.like);
+                    Toast.makeText(context,"تم الغاء حفظ الفرصة",Toast.LENGTH_LONG).show();
+
                 }
-*/
+
             }
         });
         Picasso.with(context).load(image.get(position)).into(holder.getImage());
+
+
+
 
     }
 
@@ -198,6 +210,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name, PinNumber;
         ImageView img1, imgPin;
@@ -211,6 +224,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
 
         }
+
+
 
         public ImageView getImage() {
             return img1;
