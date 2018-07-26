@@ -46,6 +46,9 @@ public class Home extends Fragment {
     int id = 0;
     Adapter mAdapter;
 
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,7 @@ public class Home extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
@@ -61,33 +64,35 @@ public class Home extends Fragment {
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        mAdapter = new Adapter(getActivity(), Names, Desc, img, Pin, ID, isPinned);
+        mAdapter = new Adapter(getActivity().getApplicationContext(), Names, Desc, img, Pin, ID, isPinned);
         recyclerView.setAdapter(mAdapter);
 
 
-
-
-
-        LinearLayoutManager linearLayoutManager = new GridLayoutManager(getActivity(), 2);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        final LinearLayoutManager LayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 2);
+        recyclerView.setLayoutManager(LayoutManager);
         recyclerView.addItemDecoration(new Home.GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter = new Adapter(getActivity().getApplicationContext(), Names, Desc, img,Pin,ID,isPinned);
+        mAdapter = new Adapter(getActivity(), Names, Desc, img, Pin, ID, isPinned);
 
         recyclerView.setAdapter(mAdapter);
 
         getOppertinuity(10, id);
+        System.out.println(id + "old ");
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(!recyclerView.canScrollVertically(1) ) {
+                    getOppertinuity(10, id);
+                }
+
+
+            }
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-            }
-
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                getOppertinuity(10, id);
 
             }
         });
@@ -96,13 +101,13 @@ public class Home extends Fragment {
         return rootView;
     }
 
-    private void getOppertinuity(int i,  int Id) {
+    private void getOppertinuity(int i, int Id) {
 
 
         Log.d("status", "get Oppertinuty");
 
 
-        SharedPreferences prefs =getActivity(). getSharedPreferences("auth", MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences("auth", MODE_PRIVATE);
         String authintication = prefs.getString("authclient", "MNrAG2QLv41sWs2qd-spRKT594bfwROM");
         APIService1 service = ApiClientHeader.getClient(authintication).create(APIService1.class);
 
@@ -120,33 +125,28 @@ public class Home extends Fragment {
                         obj = new JSONObject(String.valueOf(response.body()));
                         JSONArray arr = obj.getJSONArray("results");
 
-
                         for (int i = 0; i < arr.length(); i++) {
                             JSONObject jb = arr.getJSONObject(i);
+
                             JSONObject imageObject = jb.getJSONObject("image");
                             String name = jb.getString("name");
                             int pin = jb.getInt("pins_count");
                             int ispin = jb.getInt("isPinned");
                             String image = imageObject.getString("mi");
-                            int id = jb.getInt("id");
+
 
                             Names.add(name);
                             Pin.add(pin);
                             img.add(image);
+                            id = jb.getInt("id");
+                            System.out.println("array Length " + id);
                             ID.add(id);
                             isPinned.add(ispin);
 
                         }
+
+
                         mAdapter.notifyDataSetChanged();
-
-                        /*JSONObject IDObj = arr.getJSONObject(arr.length() - 1);
-
-                        int ID;
-                        ID = IDObj.getInt("id");*/
-
-
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -166,6 +166,7 @@ public class Home extends Fragment {
         });
 
     }
+
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
         private int spanCount;
@@ -204,11 +205,10 @@ public class Home extends Fragment {
     /**
      * Converting dp to pixel
      */
-   private int dpToPx(int dp) {
+    private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
 
-
-    }
+}
