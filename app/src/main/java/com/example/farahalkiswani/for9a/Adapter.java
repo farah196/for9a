@@ -1,13 +1,24 @@
 package com.example.farahalkiswani.for9a;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.util.Log;
+import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,10 +58,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     List<String> FullDescription;
     Context context;
 
-    private FragmentCommunication mCommunicator;
     private LayoutInflater mInflater;
 
-    public Adapter(Context context, List<String> name, List<String> Desc, List<String> image, List<Integer> pinNumber, List<Integer> id, List<Integer> isPinned) {
+    public Adapter(Context context, List<String> name, List<String> Desc, List<String> image, List<Integer> pinNumber, List<Integer> id, List<Integer> isPinned,List<String> views) {
         this.mInflater = LayoutInflater.from(context);
         this.Name = name;
         this.title = Desc;
@@ -59,6 +69,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         this.id = id;
         this.isPinned = isPinned;
         this.context = context;
+        this.views =views;
 
     }
 
@@ -83,7 +94,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         this.title = Desk;
     }
 
-    public void userPin(String auth,int Id) {
+    public void userPin(String auth, int Id) {
 
         Log.d("status", "get pin");
 
@@ -140,14 +151,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         });
     }
 
+
     @NonNull
     @Override
 
 
     public Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_row, parent, false);
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_row, parent, false);
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
 
           /*  //  View view = mInflater.inflate(R.layout.recycle_row, parent, false);
         RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view,mCommunicator);
@@ -162,6 +174,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         holder.name.setTypeface(null, Typeface.BOLD);
         holder.name.setTypeface(Typeface.SANS_SERIF);
         holder.PinNumber.setText(String.valueOf(pinNumber.get(position)));
+        holder.viewnump.setText(views.get(position));
         holder.imgPin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,28 +185,44 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                 if (isPinned.get(position) == 0) {
 
 
-                    userPin(authintication,id.get(position));
-                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position)+1));
+                    userPin(authintication, id.get(position));
+                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position) + 1));
                     holder.imgPin.setImageResource(R.drawable.likepin);
-                    Toast.makeText(context,"تم حفظ الفرصة",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "تم حفظ الفرصة", Toast.LENGTH_LONG).show();
 
-                }
-
-
-                else {
+                } else {
 
                     DeletePin(authintication, id.get(position));
-                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position)-1));
+                    holder.PinNumber.setText(String.valueOf(pinNumber.get(position) - 1));
                     holder.imgPin.setImageResource(R.drawable.like);
-                    Toast.makeText(context,"تم الغاء حفظ الفرصة",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "تم الغاء حفظ الفرصة", Toast.LENGTH_LONG).show();
 
                 }
 
             }
         });
+
+       // ((Activity)context). getWindow().setAllowReturnTransitionOverlap(false);
         Picasso.with(context).load(image.get(position)).into(holder.getImage());
 
+        holder.img1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, InfoActivity.class);
+                intent.putExtra("name",Name.get(position));
+                intent.putExtra("img",image.get(position));
+                // Get the transition name from the string
+                Pair[] pair = new Pair[2];
+                pair[0] = new Pair<View, String>(holder.name, "title_shared");
+                pair[1] = new Pair<View, String>(holder.img1, "image_shared");
 
+                ActivityOptions options =
+
+                        ActivityOptions.makeSceneTransitionAnimation((Activity) context, pair);
+
+                context.startActivity(intent,  options.toBundle());
+            }
+        });
 
 
     }
@@ -205,6 +234,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return Name.size();
     }
 
+
+
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -212,7 +243,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, PinNumber;
+        public TextView name, PinNumber ,viewnump;
         ImageView img1, imgPin;
 
         public ViewHolder(View view) {
@@ -221,10 +252,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             img1 = view.findViewById(R.id.image);
             imgPin = view.findViewById(R.id.imageView4);
             PinNumber = view.findViewById(R.id.pinNumber);
+            viewnump=view.findViewById(R.id.viewnum);
 
 
         }
-
 
 
         public ImageView getImage() {
