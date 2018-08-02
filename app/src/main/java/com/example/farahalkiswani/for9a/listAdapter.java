@@ -6,24 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.media.Image;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,9 +20,6 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -42,11 +28,7 @@ import retrofit2.Response;
 
 import static android.content.Context.MODE_PRIVATE;
 
-/**
- * Created by Farah alkiswani on 7/12/2018.
- */
-
-public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class listAdapter extends RecyclerView.Adapter<listAdapter.ViewHolder> {
 
     List<String> Name;
     List<String> title;
@@ -63,8 +45,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private LayoutInflater mInflater;
 
-    public Adapter(Context context, List<String> name, List<String> Desc, List<String> image, List<Integer> pinNumber, List<Integer> id,
-                   List<Integer> isPinned, List<String> views, List<String> Orgimage, List<String> FullDescription, List<String> OrgName) {
+    public listAdapter(Context context, List<String> name, List<String> Desc, List<String> image, List<Integer> pinNumber, List<Integer> id,
+                       List<Integer> isPinned, List<String> views, List<String> Orgimage, List<String> FullDescription, List<String> OrgName) {
         this.mInflater = LayoutInflater.from(context);
         this.Name = name;
         this.title = Desc;
@@ -80,7 +62,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     }
 
-    public Adapter(List<String> List) {
+    public listAdapter(List<String> List) {
         this.Name = List;
 
     }
@@ -163,27 +145,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
 
 
-    public Adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_row, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+    public listAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-          /*  //  View view = mInflater.inflate(R.layout.recycle_row, parent, false);
-        RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view,mCommunicator);
-        return holder;*/
+
+        View view = mInflater.inflate(R.layout.recycle_list, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final Adapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final listAdapter.ViewHolder holder, final int position) {
 
 
         holder.name.setText(Name.get(position));
         holder.name.setTypeface(null, Typeface.BOLD);
         holder.name.setTypeface(Typeface.SANS_SERIF);
         holder.PinNumber.setText(String.valueOf(pinNumber.get(position)));
-        if (isPinned.get(position) == 1)
-            holder.imgPin.setImageResource(R.drawable.likepin);
-
         holder.viewnump.setText(views.get(position));
         holder.imgPin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,17 +215,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
             }
         });
 
-        Intent intent = new Intent(context, oppertiniutyList.class);
-        intent.putExtra("nameo", Name.get(position));
 
-        intent.putExtra("imgo", image.get(position));
-        intent.putExtra("OrgImg", Orgimage.get(position));
-        intent.putExtra("full", FullDescription.get(position));
-        intent.putExtra("OrgName", OrgName.get(position));
-        intent.putExtra("pin", pinNumber.get(position));
-        intent.putExtra("view", views.get(position));
-        intent.putExtra("is", isPinned.get(position));
-        context.startActivity(intent);
     }
 
 
@@ -272,11 +238,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         public ViewHolder(View view) {
             super(view);
-            name = (TextView) view.findViewById(R.id.title);
-            img1 = view.findViewById(R.id.image);
-            imgPin = view.findViewById(R.id.imageView4);
-            PinNumber = view.findViewById(R.id.pinNumber);
-            viewnump = view.findViewById(R.id.viewnum);
+            name = (TextView) view.findViewById(R.id.title1);
+            img1 = view.findViewById(R.id.image1);
+            imgPin = view.findViewById(R.id.imageView41);
+            PinNumber = view.findViewById(R.id.pinNumber1);
+            viewnump = view.findViewById(R.id.viewnum1);
 
 
         }

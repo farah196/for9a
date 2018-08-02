@@ -1,6 +1,7 @@
 package com.example.farahalkiswani.for9a;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -19,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -29,6 +31,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.jar.Attributes;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,7 +56,7 @@ public class oppertinuity extends Fragment {
 
     int id = 0;
     Adapter mAdapter;
-
+    ImageView toList;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -60,15 +64,25 @@ public class oppertinuity extends Fragment {
 
 
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        toList = rootView.findViewById(R.id.imageView9);
+      /*  toList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent( getActivity(), oppertiniutyList.class );
 
+                Objects.requireNonNull(getActivity()).startActivity( intent );
+
+
+            }
+        });*/
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        mAdapter = new Adapter(getActivity(), Names, Desc, img, Pin, ID, isPinned, viewnum, Orgimage, Full,OrgName);
+        mAdapter = new Adapter(getActivity(), Names, Desc, img, Pin, ID, isPinned, viewnum, Orgimage, Full, OrgName);
         recyclerView.setAdapter(mAdapter);
 
 
-        final LinearLayoutManager LayoutManager = new GridLayoutManager(getActivity().getApplicationContext(), 2);
+        final LinearLayoutManager LayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setLayoutManager(LayoutManager);
         recyclerView.addItemDecoration(new oppertinuity.GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -127,6 +141,9 @@ public class oppertinuity extends Fragment {
 
                         Log.i("1555", response.body().toString());
 
+                        if (arr.length() == 0)
+                            Toast.makeText(getActivity(), "There is No oppertinuty available...", Toast.LENGTH_LONG).show();
+
 
                         for (int i = 0; i < arr.length(); i++) {
                             Log.i("1555", response.body().toString());
@@ -147,8 +164,9 @@ public class oppertinuity extends Fragment {
                             System.out.println(Oimage);
                             String view = jb.getString("views_count");
 
-                            id = jb.getInt("id");
                             String full = jb.getString("full_desc");
+
+
                             Names.add(name);
                             Pin.add(pin);
                             img.add(image);
@@ -163,7 +181,6 @@ public class oppertinuity extends Fragment {
                         }
 
                         mAdapter.notifyDataSetChanged();
-
 
 
                     } catch (JSONException e) {
